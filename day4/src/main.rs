@@ -1,13 +1,16 @@
+#![feature(array_zip, unchecked_math)]
+
 pub mod part1;
 pub mod part2;
 
 use clap::{App, Arg};
 use std::{fs, process::exit};
 
-use crate::{part1::part1, part2::part2};
+use crate::part1::part1;
+use crate::part2::part2;
 
 fn main() {
-    let matches = App::new("Day 3: Binary Diagnostic")
+    let matches = App::new("Day 4: Giant Squid")
         .version("1.0.0")
         .about("Advent of Code 2021")
         .arg(
@@ -20,7 +23,6 @@ fn main() {
         )
         .arg(
             Arg::new("part")
-                .help("Part 1 or 2")
                 .short('p')
                 .long("part")
                 .takes_value(true)
