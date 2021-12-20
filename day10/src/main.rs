@@ -69,7 +69,6 @@ fn part1(input: &str) {
 }
 
 fn part2(input: &str) {
-    let mut score = 0;
     let mut incomplete = vec![];
 
     for line in input.lines() {
@@ -95,9 +94,34 @@ fn part2(input: &str) {
         }
     }
 
-    for &line in &incomplete {
+    let mut scores: Vec<usize> = vec![0; incomplete.len()];
+    for (i, &line) in incomplete.iter().enumerate() {
+        let mut queue = vec![];
 
+        for token in line.chars() {
+            if is_open(&token) {
+                queue.push(token);
+            } else {
+                queue.pop();
+            }
+        }
+
+        println!("Queue: {:?}", queue);
+
+        for leftover in queue.iter().rev() {
+            let score = scores.get_mut(i).unwrap();
+            *score *= 5;
+            match *leftover {
+                '(' => *score += 1,
+                '[' => *score += 2,
+                '\u{007b}' => *score += 3,
+                '<' => *score += 4,
+                _ => panic!("invalid token"),
+            };
+        }
     }
 
-    println!("Score: {}", score)
+    scores.sort_unstable();
+
+    println!("Middle score: {:?}", scores[scores.len() / 2])
 }
