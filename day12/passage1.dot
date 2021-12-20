@@ -1,0 +1,15 @@
+digraph passage {
+    start[label="start"][style="solid"];
+    b[label="b"][style="dotted"];
+    end[label="end"][style="solid"];
+    d[label="d"][style="dotted"];
+    A[label="A"][style="bold"];
+    c[label="c"][style="dotted"];
+    start -> b[label=""];
+    b -> end[label=""];
+    b -> d[label=""];
+    start -> A[label=""];
+    A -> end[label=""];
+    A -> b[label=""];
+    A -> c[label=""];
+}
