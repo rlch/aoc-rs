@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs, process::exit};
+use std::{cmp::Eq, collections::HashMap, fs, hash::Hash, process::exit};
 
 use clap::{App, Arg};
 
@@ -51,7 +51,7 @@ fn bigrams(polymer: &str) -> Vec<String> {
         .collect()
 }
 
-fn step(polymer: String, rules: &HashMap<String, char>) -> String {
+fn step_basic(polymer: String, rules: &HashMap<String, char>) -> String {
     let mut new_poly = "".to_string();
     for bg in &bigrams(&polymer) {
         if rules.contains_key(bg) {
@@ -70,7 +70,7 @@ fn part1(template: &str, rules: HashMap<String, char>) {
 
     let mut polymer = template.to_string();
     for _ in 0..10 {
-        polymer = step(polymer, &rules);
+        polymer = step_basic(polymer, &rules);
         // println!("After step {}: {}", i + 1, polymer);
     }
 
@@ -79,10 +79,87 @@ fn part1(template: &str, rules: HashMap<String, char>) {
         counts.insert(c, counts.get(&c).unwrap_or(&0u32) + 1);
     }
 
+    let bigrams = bigrams(&polymer);
+    let mut bigram_counts = HashMap::<String, u32>::new();
+    for bg in &bigrams {
+        bigram_counts.insert(bg.to_string(), bigram_counts.get(bg).unwrap_or(&0) + 1);
+    }
+
+    println!("{:?}", bigram_counts);
+    println!("{:?}", counts);
+
     println!(
         "Diff: {}",
         counts.values().max().unwrap() - counts.values().min().unwrap()
     );
 }
 
-fn part2(_template: &str, _rules: HashMap<String, char>) {}
+fn incremental_insert<K: Eq + Hash + Clone>(k: &K, hm: &mut HashMap<K, u64>, by: u64) {
+    hm.insert(k.clone(), hm.get(k).unwrap_or(&0) + by);
+}
+
+fn step_eff(
+    bigram_counts: &mut HashMap<String, u64>,
+    rules: &HashMap<String, char>,
+) -> HashMap<char, u64> {
+    let mut char_counts = HashMap::<char, u64>::new();
+    for (bg, count) in bigram_counts.clone() {
+        // println!("before: {:?} with bg: {}", bigram_counts, bg);
+        if let Some(&c) = rules.get(&bg) {
+            incremental_insert(
+                &[bg.chars().next().unwrap(), c].iter().collect(),
+                bigram_counts,
+                count,
+            );
+            incremental_insert(
+                &[c, bg.chars().nth(1).unwrap()].iter().collect(),
+                bigram_counts,
+                count,
+            );
+            bigram_counts.insert(
+                bg.to_string(),
+                bigram_counts
+                    .get(&bg)
+                    .unwrap()
+                    .checked_sub(count)
+                    .unwrap_or(0),
+            );
+            char_counts.insert(c, char_counts.get(&c).unwrap_or(&0) + count);
+        }
+        // println!("after: {:?}", bigram_counts);
+    }
+    char_counts
+}
+
+fn part2(template: &str, rules: HashMap<String, char>) {
+    let bigrams = bigrams(template);
+    let mut bigram_counts = HashMap::<String, u64>::new();
+    for bg in &bigrams {
+        bigram_counts.insert(bg.to_string(), bigram_counts.get(bg).unwrap_or(&0) + 1);
+    }
+    let mut char_counts = bigram_counts
+        .iter()
+        .fold(HashMap::<char, u64>::new(), |mut hm, bg| {
+            let a = bg.0.chars().next().unwrap();
+            let b = bg.0.chars().nth(1).unwrap();
+
+            hm.insert(a, hm.get(&a).unwrap_or(&0) + bg.1);
+            hm.insert(b, hm.get(&b).unwrap_or(&0) + bg.1);
+
+            hm
+        });
+
+    for _ in 0..10 {
+        for (char, count) in step_eff(&mut bigram_counts, &rules) {
+            char_counts.insert(char, char_counts.get(&char).unwrap_or(&0) + count);
+        }
+    }
+
+    println!("{:?}", bigram_counts);
+    println!("{:?}", char_counts);
+
+    println!(
+        "Diff: {}",
+        char_counts.values().max().unwrap() - char_counts.values().min().unwrap()
+    );
+}
