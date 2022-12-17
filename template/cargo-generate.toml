@@ -1,0 +1,17 @@
+[template]
+cargo_generate_version = "0.17.0"
+
+[placeholders]
+
+[placeholders.day]
+type = "string"
+prompt = "Day of the problem?"
+regex = "^[1-9][0-9]*$"
+
+[placeholders.year]
+type = "string"
+prompt = "Year of the problem?"
+
+[placeholders.description]
+type = "string"
+prompt = "Description of the problem?"
