@@ -1,10 +1,21 @@
 use crate::part1::Shape;
 
 fn get_conjugate_shape(opponent: Shape, player: Shape) -> Shape {
-    match (opponent) {
-        Shape::Rock => todo!(),
-        Shape::Paper => todo!(),
-        Shape::Scissors => todo!(),
+    match player {
+        // Lose
+        Shape::Rock => match opponent {
+            Shape::Paper => Shape::Rock,
+            Shape::Scissors => Shape::Paper,
+            Shape::Rock => Shape::Scissors,
+        },
+        // Draw
+        Shape::Paper => opponent,
+        // Win
+        Shape::Scissors => match opponent {
+            Shape::Paper => Shape::Scissors,
+            Shape::Scissors => Shape::Rock,
+            Shape::Rock => Shape::Paper,
+        },
     }
 }
 
