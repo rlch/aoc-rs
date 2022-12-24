@@ -5,6 +5,7 @@ pub fn run(input: String) -> u32 {
     let lines = input.lines().collect::<Vec<&str>>();
     for i in (0..input.lines().count()).step_by(3) {
         let a = HashSet::<char>::from_iter(lines[i].chars());
+
         let b = HashSet::<char>::from_iter(lines[i + 1].chars());
         let c = HashSet::<char>::from_iter(lines[i + 2].chars());
         let common = *HashSet::from_iter(a.intersection(&b).copied())

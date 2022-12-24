@@ -1,0 +1,13 @@
+[package]
+name = "day4"
+version = "0.0.1"
+edition = "2021"
+description = "Camp Cleanup"
+authors = [ "RJM <rjmbowie@gmail.com>" ]
+
+[dependencies]
+anyhow = "1.0.66"
+clap = { version = "4.0.29", features = ["cargo"] }
+log = "0.4.17"
+tuple-map = "0.4.0"
+simple_logger = "4.0.0"
