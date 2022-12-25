@@ -11,15 +11,7 @@ pub fn run(input: String) -> u32 {
                     .map(|n| n.parse::<u32>().unwrap())
             })
         })
-        .map(|((a0, a1), (b0, b1))| {
-            if a0 <= b0 && a1 >= b1 {
-                b1 - b0
-            } else if b0 <= a0 && b1 >= a1 {
-                a1 - a0
-            } else {
-                0
-            }
-        })
+        .map(|((a0, a1), (b0, b1))| !(a1 < b0 || a0 > b1) as u32)
         .sum()
 }
 
